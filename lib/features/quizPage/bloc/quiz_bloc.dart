@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart'as http;
+import 'package:quiz_app/models/quizModel.dart';
 
 part 'quiz_event.dart';
 part 'quiz_state.dart';
@@ -16,15 +18,22 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   FutureOr<void> quizInitialEvent(QuizInitialEvent event, Emitter<QuizState> emit) async{
 
     var client = http.Client();
+    List<QuizModel>quizs = [];
     try {
       var response = await client.get(
           Uri.parse('https://jsonplaceholder.typicode.com/todos'),
 
       );
-      var decodedResponse = jsonDecode(response.body);
-      print(decodedResponse);
-    } finally {
-      client.close();
+      List decodedResponse = jsonDecode(response.body);
+      for(int i = 0; i<decodedResponse.length;i++){
+        QuizModel quiz = QuizModel.fromJson(decodedResponse[i] as Map<String,dynamic>);
+        quizs.add(quiz);
+      }
+      emit(QuizLoadedState(quizes:quizs));
+      print(quizs);
+    }   catch(e){
+      print(e.toString());
     }
+
   }
 }
