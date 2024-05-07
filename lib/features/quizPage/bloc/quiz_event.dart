@@ -1,4 +1,6 @@
 part of 'quiz_bloc.dart';
 
 @immutable
-sealed class QuizEvent {}
+abstract class QuizEvent {}
+
+class QuizInitialEvent extends QuizEvent{}
